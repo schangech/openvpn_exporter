@@ -147,7 +147,7 @@ func NewOpenVPNExporter(statusPaths []string, ignoreIndividuals bool) (*OpenVPNE
 			LabelColumns: serverHeaderRoutingLabelColumns,
 			Metrics: []OpenvpnServerHeaderField{
 				{
-					Column: "Last Ref (time_t)",
+					Column: "Last Ref",
 					Desc: prometheus.NewDesc(
 						prometheus.BuildFQName("openvpn", "server", "route_last_reference_time_seconds"),
 						"Time at which a route was last referenced, in seconds.",
@@ -288,13 +288,17 @@ func (e *OpenVPNExporter) collectServerStatusFromReader(statusPath string, file 
 					if l, _ := recordedMetrics[metric]; !subslice(labels, l) {
 						value, err := strconv.ParseFloat(columnValue, 64)
 						if err != nil {
-							return err
+							value, err = transferDateStringToFloat64(columnValue)
+							if err != nil {
+								return err
+							}
 						}
 						ch <- prometheus.MustNewConstMetric(
 							metric.Desc,
 							metric.ValueType,
 							value,
-							labels...)
+							labels...,
+						)
 						recordedMetrics[metric] = append(recordedMetrics[metric], labels...)
 					} else {
 						log.Printf("Metric entry with same labels: %s, %s", metric.Column, labels)
@@ -303,12 +307,14 @@ func (e *OpenVPNExporter) collectServerStatusFromReader(statusPath string, file 
 			}
 		}
 	}
+
 	// add the number of connected client
 	ch <- prometheus.MustNewConstMetric(
 		e.openvpnConnectedClientsDesc,
 		prometheus.GaugeValue,
 		float64(numberConnectedClient),
-		statusPath)
+		statusPath,
+	)
 	return scanner.Err()
 }
 

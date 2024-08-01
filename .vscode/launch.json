@@ -15,7 +15,7 @@
             "args": [
                 "--openvpn.status_paths",
                 "examples/server4.status",
-                "--ignore.individuals"
+                // "--ignore.individuals"
             ]
         }
     ],
