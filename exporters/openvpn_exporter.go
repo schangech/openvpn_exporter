@@ -16,8 +16,9 @@ import (
 )
 
 var (
-	ipv4RegexStr = `^(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)$`
-	ipv6RegexStr = `^(([0-9a-fA-F]{1,4}:){7}([0-9a-fA-F]{1,4}|:)|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]|)[0-9])\.(25[0-5]|(2[0-4]|1{0,1}[0-9]|)[0-9])\.(25[0-5]|(2[0-4]|1{0,1}[0-9]|)[0-9])\.(25[0-5]|(2[0-4]|1{0,1}[0-9]|)[0-9]))|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]|)[0-9])\.(25[0-5]|(2[0-4]|1{0,1}[0-9]|)[0-9])\.(25[0-5]|(2[0-4]|1{0,1}[0-9]|)[0-9])\.(25[0-5]|(2[0-4]|1{0,1}[0-9]|)[0-9])))$`
+	ipv4RegexStr     = `^(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)$`
+	ipv6RegexStr     = `^(([0-9a-fA-F]{1,4}:){7}([0-9a-fA-F]{1,4}|:)|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]|)[0-9])\.(25[0-5]|(2[0-4]|1{0,1}[0-9]|)[0-9])\.(25[0-5]|(2[0-4]|1{0,1}[0-9]|)[0-9])\.(25[0-5]|(2[0-4]|1{0,1}[0-9]|)[0-9]))|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]|)[0-9])\.(25[0-5]|(2[0-4]|1{0,1}[0-9]|)[0-9])\.(25[0-5]|(2[0-4]|1{0,1}[0-9]|)[0-9])\.(25[0-5]|(2[0-4]|1{0,1}[0-9]|)[0-9])))$`
+	openvpnNamespace = "openvpn"
 
 	ipv4Regex = regexp.MustCompile(ipv4RegexStr)
 	ipv6Regex = regexp.MustCompile(ipv6RegexStr)
@@ -51,56 +52,56 @@ type OpenVPNExporter struct {
 func NewOpenVPNExporter(statusPaths []string, ignoreIndividuals bool) (*OpenVPNExporter, error) {
 	// Metrics exported both for client and server statistics.
 	openvpnUpDesc := prometheus.NewDesc(
-		prometheus.BuildFQName("openvpn", "", "up"),
+		prometheus.BuildFQName(openvpnNamespace, "", "up"),
 		"Whether scraping OpenVPN's metrics was successful.",
 		[]string{"status_path"}, nil)
 	openvpnStatusUpdateTimeDesc := prometheus.NewDesc(
-		prometheus.BuildFQName("openvpn", "", "status_update_time_seconds"),
+		prometheus.BuildFQName(openvpnNamespace, "", "status_update_time_seconds"),
 		"UNIX timestamp at which the OpenVPN statistics were updated.",
 		[]string{"status_path"}, nil)
 
 	// Metrics specific to OpenVPN servers.
 	openvpnConnectedClientsDesc := prometheus.NewDesc(
-		prometheus.BuildFQName("openvpn", "", "server_connected_clients"),
+		prometheus.BuildFQName(openvpnNamespace, "", "server_connected_clients"),
 		"Number Of Connected Clients",
 		[]string{"status_path"}, nil)
 
 	// Metrics specific to OpenVPN clients.
 	openvpnClientDescs := map[string]*prometheus.Desc{
 		"TUN/TAP read bytes": prometheus.NewDesc(
-			prometheus.BuildFQName("openvpn", "client", "tun_tap_read_bytes_total"),
+			prometheus.BuildFQName(openvpnNamespace, "client", "tun_tap_read_bytes_total"),
 			"Total amount of TUN/TAP traffic read, in bytes.",
 			[]string{"status_path"}, nil),
 		"TUN/TAP write bytes": prometheus.NewDesc(
-			prometheus.BuildFQName("openvpn", "client", "tun_tap_write_bytes_total"),
+			prometheus.BuildFQName(openvpnNamespace, "client", "tun_tap_write_bytes_total"),
 			"Total amount of TUN/TAP traffic written, in bytes.",
 			[]string{"status_path"}, nil),
 		"TCP/UDP read bytes": prometheus.NewDesc(
-			prometheus.BuildFQName("openvpn", "client", "tcp_udp_read_bytes_total"),
+			prometheus.BuildFQName(openvpnNamespace, "client", "tcp_udp_read_bytes_total"),
 			"Total amount of TCP/UDP traffic read, in bytes.",
 			[]string{"status_path"}, nil),
 		"TCP/UDP write bytes": prometheus.NewDesc(
-			prometheus.BuildFQName("openvpn", "client", "tcp_udp_write_bytes_total"),
+			prometheus.BuildFQName(openvpnNamespace, "client", "tcp_udp_write_bytes_total"),
 			"Total amount of TCP/UDP traffic written, in bytes.",
 			[]string{"status_path"}, nil),
 		"Auth read bytes": prometheus.NewDesc(
-			prometheus.BuildFQName("openvpn", "client", "auth_read_bytes_total"),
+			prometheus.BuildFQName(openvpnNamespace, "client", "auth_read_bytes_total"),
 			"Total amount of authentication traffic read, in bytes.",
 			[]string{"status_path"}, nil),
 		"pre-compress bytes": prometheus.NewDesc(
-			prometheus.BuildFQName("openvpn", "client", "pre_compress_bytes_total"),
+			prometheus.BuildFQName(openvpnNamespace, "client", "pre_compress_bytes_total"),
 			"Total amount of data before compression, in bytes.",
 			[]string{"status_path"}, nil),
 		"post-compress bytes": prometheus.NewDesc(
-			prometheus.BuildFQName("openvpn", "client", "post_compress_bytes_total"),
+			prometheus.BuildFQName(openvpnNamespace, "client", "post_compress_bytes_total"),
 			"Total amount of data after compression, in bytes.",
 			[]string{"status_path"}, nil),
 		"pre-decompress bytes": prometheus.NewDesc(
-			prometheus.BuildFQName("openvpn", "client", "pre_decompress_bytes_total"),
+			prometheus.BuildFQName(openvpnNamespace, "client", "pre_decompress_bytes_total"),
 			"Total amount of data before decompression, in bytes.",
 			[]string{"status_path"}, nil),
 		"post-decompress bytes": prometheus.NewDesc(
-			prometheus.BuildFQName("openvpn", "client", "post_decompress_bytes_total"),
+			prometheus.BuildFQName(openvpnNamespace, "client", "post_decompress_bytes_total"),
 			"Total amount of data after decompression, in bytes.",
 			[]string{"status_path"}, nil),
 	}
@@ -115,8 +116,8 @@ func NewOpenVPNExporter(statusPaths []string, ignoreIndividuals bool) (*OpenVPNE
 		serverHeaderRoutingLabels = []string{"status_path", "common_name"}
 		serverHeaderRoutingLabelColumns = []string{"Common Name"}
 	} else {
-		serverHeaderClientLabels = []string{"status_path", "common_name", "connection_time", "real_address", "virtual_address", "username"}
-		serverHeaderClientLabelColumns = []string{"Common Name", "Connected Since (time_t)", "Real Address", "Virtual Address", "Username"}
+		serverHeaderClientLabels = []string{"status_path", "common_name", "connection_time", "real_address"}
+		serverHeaderClientLabelColumns = []string{"Common Name", "Connected Since", "Real Address"}
 		serverHeaderRoutingLabels = []string{"status_path", "common_name", "real_address", "virtual_address"}
 		serverHeaderRoutingLabelColumns = []string{"Common Name", "Real Address", "Virtual Address"}
 	}
@@ -128,17 +129,19 @@ func NewOpenVPNExporter(statusPaths []string, ignoreIndividuals bool) (*OpenVPNE
 				{
 					Column: "Bytes Received",
 					Desc: prometheus.NewDesc(
-						prometheus.BuildFQName("openvpn", "server", "client_received_bytes_total"),
+						prometheus.BuildFQName(openvpnNamespace, "server", "client_received_bytes_total"),
 						"Amount of data received over a connection on the VPN server, in bytes.",
-						serverHeaderClientLabels, nil),
+						serverHeaderClientLabels, nil,
+					),
 					ValueType: prometheus.CounterValue,
 				},
 				{
 					Column: "Bytes Sent",
 					Desc: prometheus.NewDesc(
-						prometheus.BuildFQName("openvpn", "server", "client_sent_bytes_total"),
+						prometheus.BuildFQName(openvpnNamespace, "server", "client_sent_bytes_total"),
 						"Amount of data sent over a connection on the VPN server, in bytes.",
-						serverHeaderClientLabels, nil),
+						serverHeaderClientLabels, nil,
+					),
 					ValueType: prometheus.CounterValue,
 				},
 			},
@@ -149,7 +152,7 @@ func NewOpenVPNExporter(statusPaths []string, ignoreIndividuals bool) (*OpenVPNE
 				{
 					Column: "Last Ref",
 					Desc: prometheus.NewDesc(
-						prometheus.BuildFQName("openvpn", "server", "route_last_reference_time_seconds"),
+						prometheus.BuildFQName(openvpnNamespace, "server", "route_last_reference_time_seconds"),
 						"Time at which a route was last referenced, in seconds.",
 						serverHeaderRoutingLabels, nil),
 					ValueType: prometheus.GaugeValue,
@@ -402,14 +405,16 @@ func (e *OpenVPNExporter) Collect(ch chan<- prometheus.Metric) {
 				e.openvpnUpDesc,
 				prometheus.GaugeValue,
 				1.0,
-				statusPath)
+				statusPath,
+			)
 		} else {
 			log.Printf("Failed to scrape showq socket: %s", err)
 			ch <- prometheus.MustNewConstMetric(
 				e.openvpnUpDesc,
 				prometheus.GaugeValue,
 				0.0,
-				statusPath)
+				statusPath,
+			)
 		}
 	}
 }
